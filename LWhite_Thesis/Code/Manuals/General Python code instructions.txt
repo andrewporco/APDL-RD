@@ -1,0 +1,42 @@
+General Python code instructions
+Inputs:
+PyAPDL (“Python + APDL”)
+	Temperature Load: [x,y,z,T]
+	Force Load: [x,y,z,Fx,Fy,Fz]
+	(Optional) Geometry
+	(Asymmetic Adapter) support location: [x,y,z]
+Hyperparameters:
+Simulated Annealer:
+	T0 = Initial starting temp
+	Alpha = Cooling constant
+	n = Number of mutations
+	limit = Mutation limit
+	h = Mesh size
+	Smax = max p-norm stress
+	Dmax = max displacement
+	Vmax = max volume
+	Amax = max area (optional)
+	PyAPDL (“Python + APDL”)
+	Number of clusters
+	S_yield = Yield stress of material
+	p = p-Norm penalty
+To run:
+	“SA” – Run all cells. The last cell is the main cell and is set up to run in a loop
+	“APDL” – code activated when running the SA code
+
+APDL Code Instructions
+Input:
+	INP file with geometry and mesh
+To run:
+	Open ANSYS APDL and “Read Input” from text file
+	MatLab Code Instruction
+Inputs:
+	.stl  of part + support domain
+	.stl of part
+Hyperparameters
+	Desired number of voxels in x,y,z (see matlab code: mesh voxelisation)
+	comp* = Placement adjustments in x, y, z
+	unit cell sizes (e.g., 1mm and 2mm)
+
+
+

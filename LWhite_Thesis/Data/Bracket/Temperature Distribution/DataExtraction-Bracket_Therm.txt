@@ -1,0 +1,62 @@
+/post1
+length = 48e-3
+width = 10e-3
+height = 24e-3
+depth = 2e-3
+tt = (depth/LAYER_DEFAULT) !number of layers for overhang
+PtY = length/h
+PtX = width/h
+h = 1e-3
+
+title1 = 'Opex2_long'
+ii = 1
+*DO,SS,1,4,1
+    set,SS,LAST ! if nothing specified, use final value
+    *CFOPEN,%title1%_%SS%,txt
+
+    *DO,Y,0,PtY,1
+        *DO,X,0,PtX,1 !Left Face
+            LocX = (h*X)
+            LocY = (h*Y)
+            LocZ = height!+ii*h
+            *GET,TeT,node,node(LocX,LocY,LocZ),TEMP
+
+            *VWRITE,LocX/0.001,LocY/0.001,LocZ/0.001,TeT
+                (F15.8, F15.8, F15.8, F15.8)            
+
+        *ENDDO !X
+    *ENDDO !Y
+    *CFCLOSE
+    ii=ii+1
+*ENDDO !Set
+
+length = 10e-3
+width = 26e-3
+height = 24e-3
+depth = 2e-3
+tt = (depth/LAYER_DEFAULT) !number of layers for overhang
+PtY = length/h
+PtX = width/h
+h = 1e-3
+
+title1 = 'Opex2_short'
+ii = 1
+*DO,SS,1,4,1
+    set,SS,LAST ! if nothing specified, use final value
+    *CFOPEN,%title1%_%SS%,txt
+
+    *DO,Y,0,PtY,1
+        *DO,X,0,PtX,1 !Left Face
+            LocX = 12e-3+(h*X)
+            LocY = 49.5e-3+(h*Y)
+            LocZ = height!+ii*h
+            *GET,TeT,node,node(LocX,LocY,LocZ),TEMP
+
+            *VWRITE,LocX/0.001,LocY/0.001,LocZ/0.001,TeT
+                (F15.8, F15.8, F15.8, F15.8)            
+
+        *ENDDO !X
+    *ENDDO !Y
+    *CFCLOSE
+    ii=ii+1
+*ENDDO !Set

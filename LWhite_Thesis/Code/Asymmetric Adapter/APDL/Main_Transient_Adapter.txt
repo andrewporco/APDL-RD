@@ -1,0 +1,137 @@
+
+/Clear,Start
+height = 51e-3
+
+h = (1e-3) !0.3*10**-3
+
+/INPUT, AsymTherm, INP, , , 0
+t = 0
+/prep7
+
+mp,DENS,1,8290! kg m^-3
+mp,KXX,1,10.3! kg m^-3
+mp,c,1,435
+!mp,DENS,2,2780! kg m^-3
+!mp,KXX,2,0.11! kg m^-3
+!mp,c,2,920
+esel,ALL
+mpchg,1,ALL
+
+ALLSEL, ALL !Select everything
+/SOL
+ANTYPE,4 ! transient analysis
+TRNOPT,FULL ! full transient analysis 
+SOLCONTROL, ON    !  all control commends set earlier are reset to their original default values
+
+NROPT, FULL, , ON    !  Use full Newton-Raphson solver
+OUTRES, ALL, LAST    ! Output all the solutin items every substep of each load step 
+
+KBC,1                ! stepped BC's
+
+UnderT = 4E-4
+! Time stepping
+Cool = 5
+TIME,TotHeat        ! end time for load step
+AUTOTS,ON            ! use automatic time stepping
+TUNIF,20
+
+to_skip=1 ! Enter number of lines to skip
+/INQUIRE,numlines,LINES,PulseFieldHeat9,csv
+to_read=numlines-to_skip
+*DEL,LOAD,,NOPR
+*DIM,LOAD,TABLE,to_read ! table array to hold data
+*TREAD,LOAD,PulseFieldHeat9,csv,,to_skip
+!####### Boundary Conditions ###
+
+ALLSEL, ALL !Select everything
+
+LAYER_DEFAULT = h
+DMSTEP = height/LAYER_DEFAULT
+Layer = height/DMSTEP
+ESEL, S, CENT, Z, Layer, height !Select elements from top layer
+
+    
+EKILL, ALL !Deactivate all elements on the top layer
+     
+ESEL, S, LIVE !select all live elements
+
+EPLOT !plot live elements
+
+ESEL, INVE !Select deactivated elements
+    
+NSLE, S, ALL !Select all the nodes of deactivated elements
+    
+D, ALL, ALL !Constrain all the nodes at those deactivated elements
+    
+ALLSEL, ALL !Select everything
+*DO, IT, 1, DMSTEP, 1 !For IT in range 1 to number of steps in increments of 1
+    *IF, IT, EQ, 1, THEN !If the first iteration
+		esel,s,type,,233
+		nsle
+		sf,all,conv,800.,20.
+        NSEL, S, LOC, Z, 0,Layer !Select all nodes at the current layer
+        DDELE, ALL, ALL !Delete the degree of freedom constraint
+        BF,ALL,hgen,%LOAD%
+        ALLSEL, ALL
+        TIME,UnderT       ! end time for load step
+        nsub,50,500,10
+        timint,on                  ! Turn on time integration effects
+        ALLSEL, ALL
+        SOLVE
+        TIME,Cool       ! end time for load step
+        nsub,100,1000,10
+        timint,on                  ! Turn on time integration effects
+        ALLSEL, ALL
+        SOLVE
+        NSEL,S,LOC,Z,Layer
+        BFDELE, ALL, ALL !Delete the degree of freedom constraint
+    *ELSE
+        TIME,UnderT+(IT-1)*Cool       ! end time for load step
+
+        nsub,50,500,10
+        timint,on                  ! Turn on time integration effects
+        ESEL, S, CENT, Z, (IT-1)*Layer, IT*Layer !Select the layer from 1
+        EALIVE, ALL !Activate the elements between
+        NSLE, S !Select all the nodes in those elements
+        DDELE, ALL, ALL !Delete the degree of freedom constraint
+        NSEL,S,LOC,Z,IT*Layer
+        BF,ALL,hgen,%LOAD%
+        esel,s,type,,233
+        nsle
+        sf,all,conv,800.,20.
+        ALLSEL, ALL
+        SOLVE
+        TIME, IT*Cool       ! end time for load step
+        nsub,100,1000,10
+        timint,on                  ! Turn on time integration effects
+        ALLSEL, ALL
+        SOLVE
+        NSEL,S,LOC,Z,IT*Layer
+        BFDELE, ALL, ALL !Delete the degree of freedom constraint
+    *ENDIF
+    ALLSEL, ALL !Select everything
+                     
+*ENDDO
+
+!save
+
+/post1
+set,LAST ! if nothing specified, use final value
+
+/PLOPTS,INFO,3  
+/CONTOUR,ALL,18 
+/PNUM,MAT,1 
+/NUMBER,1   
+/REPLOT,RESIZE  
+PLNSOL,TEMP 
+/REPLOT,RESIZE  
+/VIEW,  1, -0.684617885038    , -0.670244625189    ,  0.286479482498
+/ANG,   1,   73.8217883581  
+/REPLOT  
+/UDOC,1,CNTR,BOTTOM 
+/UDOC,1,DATE,1  
+/UDOC,1,DATE,0 
+/UDOC,1,TYP2,0   
+/REPLOT  
+allsel,all
+title = 'TempDist'

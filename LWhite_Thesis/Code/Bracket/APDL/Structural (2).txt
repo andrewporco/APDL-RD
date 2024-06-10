@@ -1,0 +1,217 @@
+/Clear,Start
+
+d = (2)/1000
+f = 24/1000
+
+h = 1e-3 !0.3*10**-3
+/INPUT, Struct_MODBrack2, INP, , , 0
+
+btol,0.000001
+
+!ELEMENT AND MATERIAL PARAMETERS
+
+AIR_TEMP = 25.0
+/prep7
+
+! MATERIAL PROPERTIES:
+
+MPTEMP, 1, 25, 100 
+
+
+MP, REFT, 1, AIR_TEMP 
+MP, DENS, 1, 2.76E3   !!!kg/m3
+MP, PRXY, 1, 0.33  
+MP, ALPX, 1, -0.016       
+MP, ALPY, 1, -0.016     
+MP, ALPZ, 1, 0.014         
+
+MP, EX, 1, 74.0E9
+
+TB, BISO, 1, 6, 2          
+
+TBTEMP, 25
+TBDATA, , 2.76E8, 6.8E8 
+
+TBTEMP, 100
+TBDATA, , 2.76E8, 6.8E8
+
+esel,all
+MPCHG,1,ALL
+
+!!!!! SC !!!!! 
+mp,DENS,2,8862 ! kg m^-3
+mp,KXX,2,12.397 ! W m^-1 C^-1
+mp,KYY,2,12.397! W m^-1 C^-1
+mp,KZZ,2,12.397! W m^-1 C^-1
+mp,C,2,421 !J kg^-1 C^-1
+mp,PRXY, 2, 0.33 
+mp,ALPX, 2, -0.016       
+mp,ALPY, 2, -0.016      
+mp,ALPZ, 2, 0.014 
+mp,EX, 2, 7.64E9 
+mp,EY, 2, 7.64E9 
+mp,EZ, 2, 7.64E9 
+mp,GXY, 2, 5.419E+08 
+mp,GYZ, 2, 5.419E+08 
+mp,GXZ, 2, 5.419E+08 
+! mptemp ,2,25,100 
+mp,REFT,2,AIR_TEMP 
+tb,BISO,2,6,2 
+tbtemp ,25 
+tbdata, ,2.76E8,6.8E8 
+tbtemp ,100 
+tbdata, ,2.76E8,6.8E8 
+!!!!! BC !!!!! 
+mp,DENS,3,8862 !kg m^-3
+mp,KXX,3,24.392 !W m^-1 C^-1
+mp,KYY,3,24.392 !W m^-1 C^-1
+mp,KZZ,3,24.392 !W m^-1 C^-1
+mp,C,3,421 !J kg^-1 C^-1
+mp,PRXY, 3, 0.33 
+mp,ALPX, 3, -0.016       
+mp,ALPY, 3, -0.016      
+mp,ALPZ, 3, 0.014       
+mp,EX, 3, 3.69E9 
+mp,EY, 3, 3.69E9 
+mp,EZ, 3, 9.73E9 
+mp,GXY, 3, 4.375E09 
+mp,GYZ, 3, 4.175E09 
+mp,GXZ, 3, 4.175E09 
+! mptemp ,3,25,100 
+mp,REFT,3,AIR_TEMP 
+tb,BISO,3,6,2 
+tbtemp ,25 
+tbdata, ,2.76E8,6.8E8 
+tbtemp ,100 
+tbdata, ,2.76E8,6.8E8 
+!!!!! FC !!!!
+mp,DENS,4,8862 !kg m^-3
+mp,KXX,4,39.43 !W m^-1 C^-1
+mp,KYY,4,39.43 !W m^-1 C^-1
+mp,KZZ,4,39.43 !W m^-1 C^-1
+mp,C,4,421 !J kg^-1 C^-1
+mp,PRXY, 4, 0.33 
+mp,ALPX, 4, -0.016       
+mp,ALPY, 4, -0.016      
+mp,ALPZ, 4, 0.014       
+mp,EX, 4, 1.34E10 
+mp,EY, 4, 1.34E10 
+mp,EZ, 4, 1.90E10 
+mp,GXY, 4, 1.598E08 
+mp,GYZ, 4, 6.873E09 
+mp,GXZ, 4, 6.873E09 
+! mptemp ,4,25,100 
+mp,REFT,4,AIR_TEMP 
+tb,BISO,4,6,2 
+tbtemp ,25 
+tbdata, ,2.76E8,6.8E8 
+tbtemp ,100 
+tbdata, ,2.76E8,6.8E8 
+
+
+
+/INPUT, Opex2, TXT, , , 0
+
+/PREP7
+
+EPLOT
+
+!LSCLEAR, ALL
+
+!KEYOPT, 1, 2, 1    ! Select the options of Solid 185
+
+TREF, AIR_TEMP
+
+NSEL, S, LOC, Z, 0
+D,ALL, ALL      ! Fix the fixture
+
+NSEL, S, LOC, Y, 0
+DSYM,SYMM,Y, , 
+NSEL,ALL
+
+NSEL, S, LOC, X, 52.5e-3
+DSYM,SYMM,X, , 
+
+
+ALLSEL, ALL 
+
+!!!!! MECHANICAL Solution !!!!
+
+! MECHANICAL
+
+/SOLU
+
+! Solution enviorment setting starts
+
+ANTYPE, STATIC    ! Quasistatic analysis
+
+SOLCONTROL, ON    !  all control commends set earlier are reset to their original default values
+
+NROPT, FULL, , ON    !  Use full Newton-Raphson solver
+
+! NLGEOM, ON    ! Include large-defection effects in a static or transient analysis
+
+OUTRES, ALL, LAST    ! Output all the solutin items every substep of each load step 
+
+ALLSEL, ALL
+
+ 
+
+ALLSEL, ALL 
+LAYER_DEFAULT =h
+DMSTEP = (f+d)/LAYER_DEFAULT
+Layer = ((f+d))/DMSTEP
+!ESEL, S, CENT, Z, f+Layer,(f+d) !Select elements from top layer
+ESEL, S, CENT, Z, Layer, (f+d)   
+EKILL, ALL !Deactivate all elements on the top layer
+     
+ESEL, S, LIVE !select all live elements
+
+EPLOT !plot live elements
+
+ESEL, INVE !Select deactivated elements
+    
+NSLE, S, ALL !Select all the nodes of deactivated elements
+    
+D, ALL, ALL !Constrain all the nodes at those deactivated elements
+    
+ALLSEL, ALL !Select everything
+
+*DO, IT, 1,DMSTEP, 1
+
+  *IF, IT, EQ, 1, THEN
+      
+      NSEL, S, LOC, Z, Layer
+      DDELE, ALL, ALL 
+
+      NSEL, S, LOC, Y, 0
+      DSYM,SYMM,Y, , 
+      NSEL, S, LOC, X, 52.5e-3
+      DSYM,SYMM,X, , 
+      
+      ESEL, S, CENT, Z, 0, Layer
+      
+      BFE, ALL, TEMP, , AIR_TEMP+1
+
+  *ELSE
+           
+      ESEL, S, CENT, Z, (IT-1)*Layer, IT*Layer
+               
+      EALIVE, ALL
+
+      BFE, ALL, TEMP, , AIR_TEMP+1
+      
+      NSLE, S
+      DDELE, ALL, ALL 
+
+      NSEL, S, LOC, Y, 0
+      DSYM,SYMM,Y, , 
+      NSEL, S, LOC, X, 52.5e-3
+      DSYM,SYMM,X, ,        
+  *ENDIF
+
+  ALLSEL, ALL
+
+  SOLVE
+
+*ENDDO

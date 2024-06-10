@@ -1,0 +1,274 @@
+/Clear,Start
+
+height = 51e-3
+
+h = 1e-3 !0.3*10**-3
+!/INPUT, TestBox, INP, , , 0
+/INPUT, AsymStructEx4, INP, , , 0
+
+
+btol,0.000001
+
+!ELEMENT AND MATERIAL PARAMETERS
+
+AIR_TEMP = 25.0
+/prep7
+
+! MATERIAL PROPERTIES:
+
+
+MPTEMP, 1, 25, 100 
+density = 8.29E3
+pos = 0.319
+aX = -0.015
+aY = -0.015
+aZ = 0.02
+young = 2.17E11
+yield = 7.15E8
+tangent = 1E6
+
+MP, REFT, 1, AIR_TEMP 
+MP, DENS, 1, density   !!!kg/m3
+MP, PRXY, 1, pos  
+MP, ALPX, 1, aX      
+MP, ALPY, 1, aY    
+MP, ALPZ, 1, aZ       
+
+MP, EX, 1, young
+
+TB, BISO, 1, 2, 2          
+
+TBTEMP, 25
+TBDATA, , yield, tangent
+
+TBTEMP, 100
+TBDATA, , yield, tangent
+
+esel,all
+MPCHG,1,ALL
+
+!!!!! SC !!!!! 
+mp,DENS,2,density  ! kg m^-3
+mp,KXX,2,1.54 ! W m^-1 C^-1
+mp,KYY,2,1.54! W m^-1 C^-1
+mp,KZZ,2,1.54! W m^-1 C^-1
+mp,C,2,436 !J kg^-1 C^-1
+mp,PRXY, 2, 0.319 
+mp,ALPX, 2, aX      
+mp,ALPY, 2, aY     
+mp,ALPZ, 2, aZ 
+mp,EX, 2, 3.084E10 
+mp,EY, 2, 3.084E10  
+mp,EZ, 2, 3.084E10  
+mp,GXY, 2, 2.92E10 
+mp,GYZ, 2, 2.92E10 
+mp,GXZ, 2, 2.92E10  
+! mptemp ,2,25,100 
+mp,REFT,2,AIR_TEMP 
+tb,BISO,2,6,2 
+TBTEMP, 25
+TBDATA, , yield, tangent
+
+TBTEMP, 100
+TBDATA, , yield, tangent
+!!!!! TR !!!!! 
+mp,DENS,3,density !kg m^-3
+mp,KXX,3,1.9135 !W m^-1 C^-1
+mp,KYY,3,1.9135 !W m^-1 C^-1
+mp,KZZ,3,2.9549 !W m^-1 C^-1
+mp,C,3,436 !J kg^-1 C^-1
+mp,PRXY, 3, 0.319
+mp,ALPX, 3, aX       
+mp,ALPY, 3, aY     
+mp,ALPZ, 3, aZ      
+mp,EX, 3, 3.137E+10
+mp,EY, 3, 3.137E+10
+mp,EZ, 3, 5.1975E+10
+mp,GXY, 3, 2.0749E+09
+mp,GYZ, 3, 1.3903E+10
+mp,GXZ, 3, 1.3903E+10
+! mptemp ,3,25,100 
+mp,REFT,3,AIR_TEMP 
+tb,BISO,3,6,2 
+TBTEMP, 25
+TBDATA, , yield, tangent
+
+TBTEMP, 100
+TBDATA, , yield, tangent
+!!!!! FC !!!!
+mp,DENS,4,density !kg m^-3
+mp,KXX,4,4.331 !W m^-1 C^-1
+mp,KYY,4,4.331 !W m^-1 C^-1
+mp,KZZ,4,5.5841 !W m^-1 C^-1
+mp,C,4,436 !J kg^-1 C^-1
+mp,PRXY, 4, 0.319 
+mp,ALPX, 4, aX       
+mp,ALPY, 4, aY      
+mp,ALPZ, 4, aZ      
+mp,EX, 4, 7.95E10 
+mp,EY, 4, 7.95E10 
+mp,EZ, 4, 1.04E11 
+mp,GXY, 4, 1.46E10 
+mp,GYZ, 4, 3.26E10
+mp,GXZ, 4, 3.263E10 
+! mptemp ,4,25,100 
+mp,REFT,4,AIR_TEMP 
+tb,BISO,4,6,2 
+TBTEMP, 25
+TBDATA, , yield, tangent
+
+TBTEMP, 100
+TBDATA, , yield, tangent
+
+!!!!! sc !!!!
+mp,DENS,5,density !kg m^-3
+mp,KXX,5,6.84 !W m^-1 C^-1
+mp,KYY,5,6.84 !W m^-1 C^-1
+mp,KZZ,5,6.84 !W m^-1 C^-1
+mp,C,5,436 !J kg^-1 C^-1
+mp,PRXY, 5, 0.319
+mp,ALPX, 5, aX      
+mp,ALPY, 5, aY      
+mp,ALPZ, 5, aZ       
+mp,EX, 5, 1.36E10 
+mp,EY, 5, 1.36E10 
+mp,EZ, 5, 1.36E10 
+mp,GXY, 5, 4.48E10
+mp,GYZ, 5, 4.48E10
+mp,GXZ, 5, 4.48E10
+! mptemp, 5,25,100 
+mp,REFT,5,AIR_TEMP 
+tb,BISO,5,6,2 
+TBTEMP, 25
+TBDATA, , yield, tangent
+
+TBTEMP, 100
+TBDATA, , yield, tangent
+
+!!!!! bc !!!!
+mp,DENS,6,density !kg m^-3
+mp,KXX,6,3.787 !W m^-1 C^-1
+mp,KYY,6,3.787 !W m^-1 C^-1
+mp,KZZ,6,3.787 !W m^-1 C^-1
+mp,C,6,436 !J kg^-1 C^-1
+mp,PRXY, 6, 0.319 
+mp,ALPX, 6, aX      
+mp,ALPY, 6, aY      
+mp,ALPZ, 6, aZ       
+mp,EX, 6, 3.94E10 
+mp,EY, 6, 3.94E10 
+mp,EZ, 6, 3.94E10 
+mp,GXY, 6, 2.67E10 
+mp,GYZ, 6, 2.67E10 
+mp,GXZ, 6, 2.67E10 
+! mptemp ,4,25,100 
+mp,REFT,6,AIR_TEMP 
+tb,BISO,6,6,2 
+TBTEMP, 25
+TBDATA, , yield, tangent
+
+TBTEMP, 100
+TBDATA, , yield, tangent
+
+!!!!! sol !!!!
+mp,DENS,7,density !kg m^-3
+mp,KXX,7,10.3! kg m^-3!W m^-1 C^-1
+mp,C,7,436 !J kg^-1 C^-1
+mp,PRXY, 7, 0.319 
+mp,ALPX, 7, aX      
+mp,ALPY, 7, aY      
+mp,ALPZ, 7, aZ       
+mp,EX, 7, young
+
+! mptemp ,4,25,100 
+mp,REFT,7,AIR_TEMP 
+tb,BISO,7,6,2 
+TBTEMP, 25
+TBDATA, , yield, tangent
+
+TBTEMP, 100
+TBDATA, , yield, tangent
+
+/INPUT, AsymWhole_, TXT, , , 0
+!/INPUT, AsymSing, TXT, , , 0
+
+/PREP7
+
+EPLOT
+
+!LSCLEAR, ALL
+
+!KEYOPT, 1, 2, 1    ! Select the options of Solid 185
+
+TREF, AIR_TEMP
+
+NSEL, S, LOC, Z, 0
+D,ALL, ALL      ! Fix the fixture
+
+ALLSEL, ALL 
+
+!!!!! MECHANICAL Solution !!!!
+
+! MECHANICAL
+
+/SOLU
+
+! Solution enviorment setting starts
+
+ANTYPE, STATIC    ! Quasistatic analysis
+
+SOLCONTROL, ON    !  all control commends set earlier are reset to their original default values
+
+NROPT, FULL, , ON    !  Use full Newton-Raphson solver
+
+! NLGEOM, ON    ! Include large-defection effects in a static or transient analysis
+
+OUTRES, ALL, LAST    ! Output all the solutin items every substep of each load step 
+
+ALLSEL, ALL
+LAYER_DEFAULT =h
+DMSTEP = height/LAYER_DEFAULT
+Layer = (height)/DMSTEP
+ESEL, S, CENT, Z, Layer, height  
+EKILL, ALL !Deactivate all elements on the top layer
+     
+ESEL, S, LIVE !select all live elements
+
+EPLOT !plot live elements
+
+ESEL, INVE !Select deactivated elements
+    
+NSLE, S, ALL !Select all the nodes of deactivated elements
+    
+D, ALL, ALL !Constrain all the nodes at those deactivated elements
+    
+ALLSEL, ALL !Select everything
+
+*DO, IT, 1,DMSTEP, 1
+
+  *IF, IT, EQ, 1, THEN
+      
+      NSEL, S, LOC, Z, Layer
+      DDELE, ALL, ALL 
+      
+      ESEL, S, CENT, Z, 0, Layer
+      
+      BFE, ALL, TEMP, , AIR_TEMP+1
+
+  *ELSE
+           
+      ESEL, S, CENT, Z, (IT-1)*Layer, IT*Layer
+               
+      EALIVE, ALL
+
+      BFE, ALL, TEMP, , AIR_TEMP+1
+      
+      NSLE, S
+      DDELE, ALL, ALL        
+  *ENDIF
+
+  ALLSEL, ALL
+
+  SOLVE
+
+*ENDDO

@@ -1,0 +1,9 @@
+allsel,all
+title = 'AA_TempDist'
+*DO,SS,1,51,1
+    SSS = 2*SS-1
+    set,SSS,LAST ! if nothing specified, use final value
+    *CFOPEN,%title%_%SSS%,txt
+    /INPUT, AA_TExtraction, TXT, , , 0
+    *CFCLOSE
+*ENDDO !Set

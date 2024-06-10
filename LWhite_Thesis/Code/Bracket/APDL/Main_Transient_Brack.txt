@@ -1,0 +1,146 @@
+
+/Clear,Start
+height = 35e-3
+
+h = (0.5e-3) !0.3*10**-3
+
+title1 = 'Op_Cool'
+title2 = 'Op_heat'
+/INPUT, Adapter_SolidScaledTemp, INP, , , 0
+t = 0
+/prep7
+
+mp,DENS,1,2780! kg m^-3
+mp,KXX,1,110! kg m^-3
+mp,c,1,920
+!mp,DENS,2,2780! kg m^-3
+!mp,KXX,2,0.11! kg m^-3
+!mp,c,2,920
+esel,ALL
+mpchg,1,ALL
+
+ALLSEL, ALL !Select everything
+/SOL
+ANTYPE,4 ! transient analysis
+TRNOPT,FULL ! full transient analysis 
+SOLCONTROL, ON    !  all control commends set earlier are reset to their original default values
+
+NROPT, FULL, , ON    !  Use full Newton-Raphson solver
+OUTRES, ALL, LAST    ! Output all the solutin items every substep of each load step 
+
+KBC,1                ! stepped BC's
+
+UnderT = 4E-4
+! Time stepping
+Cool = 5
+TIME,TotHeat        ! end time for load step
+AUTOTS,ON            ! use automatic time stepping
+TUNIF,20
+
+to_skip=1 ! Enter number of lines to skip
+/INQUIRE,numlines,LINES,PulseFieldHeat_5sec,csv
+to_read=numlines-to_skip
+*DEL,LOAD,,NOPR
+*DIM,LOAD,TABLE,to_read ! table array to hold data
+*TREAD,LOAD,PulseFieldHeat_5sec,csv,,to_skip
+!####### Boundary Conditions ###
+
+ALLSEL, ALL !Select everything
+
+LAYER_DEFAULT = h
+DMSTEP = (d)/LAYER_DEFAULT
+Layer = (d)/DMSTEP
+ESEL, S, CENT, Z, f+layer, (f+d) !Select elements from top layer
+
+    
+EKILL, ALL !Deactivate all elements on the top layer
+     
+ESEL, S, LIVE !select all live elements
+
+EPLOT !plot live elements
+
+ESEL, INVE !Select deactivated elements
+    
+NSLE, S, ALL !Select all the nodes of deactivated elements
+    
+D, ALL, ALL !Constrain all the nodes at those deactivated elements
+    
+ALLSEL, ALL !Select everything
+bb = f/h
+*DO, IT, 1, DMSTEP, 1 !For IT in range 1 to number of steps in increments of 1
+    *IF, IT, EQ, 1, THEN !If the first iteration
+!        ESEL, S, CENT, Z, f, f+Layer !Select the layer from 
+!        mpchg,2,ALL    
+		esel,s,type,,13223
+		nsle
+		sf,all,conv,100.,20.
+        NSEL, S, LOC, Z, f,f+Layer !Select all nodes at the current layer
+        DDELE, ALL, ALL !Delete the degree of freedom constraint
+        BF,ALL,hgen,%LOAD%
+        ALLSEL, ALL
+        TIME,UnderT       ! end time for load step
+        nsub,50,500,10
+        timint,on                  ! Turn on time integration effects
+        ALLSEL, ALL
+        SOLVE
+        TIME,Cool       ! end time for load step
+        nsub,100,1000,10
+        timint,on                  ! Turn on time integration effects
+        ALLSEL, ALL
+        SOLVE
+        NSEL,S,LOC,Z,f+Layer
+        BFDELE, ALL, ALL !Delete the degree of freedom constraint
+    *ELSE
+        TIME,UnderT+(IT-1)*Cool       ! end time for load step
+
+        nsub,50,500,10
+        timint,on                  ! Turn on time integration effects
+        ESEL, S, CENT, Z, f+(IT-1)*Layer, f+IT*Layer !Select the layer from 1
+        EALIVE, ALL !Activate the elements between
+!        mpchg,2,ALL 
+        NSLE, S !Select all the nodes in those elements
+        DDELE, ALL, ALL !Delete the degree of freedom constraint
+        NSEL,S,LOC,Z,f+IT*Layer
+        BF,ALL,hgen,%LOAD%
+        esel,s,type,,13223
+        nsle
+        sf,all,conv,100.,20.
+        ALLSEL, ALL
+        SOLVE
+        TIME, IT*Cool       ! end time for load step
+        nsub,100,1000,10
+        timint,on                  ! Turn on time integration effects
+        ALLSEL, ALL
+        SOLVE
+        NSEL,S,LOC,Z,f+IT*Layer
+        BFDELE, ALL, ALL !Delete the degree of freedom constraint
+    *ENDIF
+    ALLSEL, ALL !Select everything
+    ESEL, S, CENT, Z, f, f+IT*Layer !Select the layer from 
+    mpchg,1,ALL 
+    ALLSEL, ALL !Select everything
+                     
+*ENDDO
+
+!save
+
+/post1
+set,LAST ! if nothing specified, use final value
+
+/PLOPTS,INFO,3  
+/CONTOUR,ALL,18 
+/PNUM,MAT,1 
+/NUMBER,1   
+/REPLOT,RESIZE  
+PLNSOL,TEMP 
+/REPLOT,RESIZE  
+/VIEW,  1, -0.684617885038    , -0.670244625189    ,  0.286479482498
+/ANG,   1,   73.8217883581  
+/REPLOT  
+/UDOC,1,CNTR,BOTTOM 
+/UDOC,1,DATE,1  
+/UDOC,1,DATE,0 
+/UDOC,1,TYP2,0   
+/REPLOT  
+allsel,all
+

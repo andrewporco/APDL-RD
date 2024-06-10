@@ -1,0 +1,38 @@
+APDL Code Instructions
+"Main_Transient.txt": Thermal
+Input:
+	INP file with geometry and mesh	#Optional
+	PulseFieldHeat_5sec.csv	#CSV of thermal loading cycle
+
+Hyperparameters
+	a,b,...,f = geometry of cantilever(s)	#Refer to paper for geometries
+	h = mesh size
+	DENS = density
+	KXX, KYY, KZZ = thermal conductivity
+	C = heat capacity
+	element type	#could be included in INP file
+	UnderT = thermal application time
+	Cool = cooling time
+	nsub = number of substeps
+
+To run:
+	Open ANSYS APDL and “Read Input” from text file
+
+"Structural.txt": Structural
+Input:
+	INP file with geometry and mesh	#Optional
+
+Hyperparameters
+	a,b,...,f = geometry of cantilever(s)	#Refer to paper for geometries
+	AIR_TEMP = initial temperature	
+	h = mesh size
+	DENS = density
+	PRXY = poisson's ratio
+	ALPX, ALPY, ALPZ = coefficient of thermal expansion
+	EX = Young's Modulus
+	BISO - bilinear isotropic hardening using von Mises or Hill plasticity
+	element type	#could be included in INP file
+
+
+To run:
+	Open ANSYS APDL and “Read Input” from text file

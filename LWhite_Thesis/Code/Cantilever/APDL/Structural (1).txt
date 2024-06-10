@@ -1,0 +1,138 @@
+/Clear,Start
+a = 0
+b = 4/1000
+c = 18/1000
+d = 1/1000
+e = 10/1000
+f = 10/1000
+
+h = (2e-3)/10 !0.3*10**-3
+/INPUT, Struct_Cant, INP, , , 0
+
+btol,0.000001
+
+!ELEMENT AND MATERIAL PARAMETERS
+
+AIR_TEMP = 25.0
+/prep7
+
+! MATERIAL PROPERTIES:
+
+MPTEMP, 1, 25, 100 
+
+
+MP, REFT, 1, AIR_TEMP 
+MP, DENS, 1, 2.76E3   !!!kg/m3
+MP, PRXY, 1, 0.33  
+MP, ALPX, 1, -0.016       
+MP, ALPY, 1, -0.016     
+MP, ALPZ, 1, 0.014         
+
+MP, EX, 1, 74.0E9
+
+TB, BISO, 1, 6, 2          
+
+TBTEMP, 25
+TBDATA, , 2.76E8, 6.8E8 
+
+TBTEMP, 100
+TBDATA, , 2.76E8, 6.8E8
+
+ESEL, ALL
+MPCHG,1,ALL
+
+/PREP7
+
+EPLOT
+
+!LSCLEAR, ALL
+
+!KEYOPT, 1, 2, 1    ! Select the options of Solid 185
+
+TREF, AIR_TEMP
+
+NSEL, S, LOC, Z, 0
+
+D, UX, 0      ! Fix the fixture
+D, UY, 0      ! Fix the fixture
+D, UZ, 0      ! Fix the fixture
+
+ALLSEL, ALL 
+
+!!!!! MECHANICAL Solution !!!!
+
+! MECHANICAL
+
+/SOLU
+
+! Solution enviorment setting starts
+
+ANTYPE, STATIC    ! Quasistatic analysis
+
+SOLCONTROL, ON    !  all control commends set earlier are reset to their original default values
+
+NROPT, FULL, , ON    !  Use full Newton-Raphson solver
+
+! NLGEOM, ON    ! Include large-defection effects in a static or transient analysis
+
+OUTRES, ALL, LAST    ! Output all the solutin items every substep of each load step  
+
+ALLSEL, ALL
+
+NSEL, S, LOC, Z,f 
+NSEL, R, LOC, X,0,b 
+    
+D, ALL, ALL !Constrain all the nodes at those deactivated elements
+
+LAYER_DEFAULT =h
+DMSTEP = (d)/LAYER_DEFAULT
+Layer = (d)/DMSTEP
+ESEL, S, CENT, Z, f+Layer, (d) !Select elements from top layer
+!ESEL, S, CENT, Z, Layer, (f+d)   
+EKILL, ALL !Deactivate all elements on the top layer
+     
+ESEL, S, LIVE !select all live elements
+
+EPLOT !plot live elements
+
+ESEL, INVE !Select deactivated elements
+    
+NSLE, S, ALL !Select all the nodes of deactivated elements
+    
+D, ALL, ALL !Constrain all the nodes at those deactivated elements
+    
+ALLSEL, ALL !Select everything
+
+*DO, IT, 1, DMSTEP, 1
+
+  *IF, IT, EQ, 1, THEN
+      
+      NSEL, S, LOC, Z, f+Layer
+        
+      DDELE, ALL, ALL 
+      
+      ESEL, S, CENT, Z, f, f+Layer
+      
+      BFE, ALL, TEMP, , AIR_TEMP+1
+  
+  *ELSE
+           
+      ESEL, S, CENT, Z, f+(IT-1)*Layer, f+IT*Layer
+               
+      EALIVE, ALL
+      
+      BFE, ALL, TEMP, , AIR_TEMP+1
+      
+      NSLE, S
+      
+      DDELE, ALL, ALL 
+                    
+  *ENDIF
+
+  ALLSEL, ALL
+
+  SOLVE
+
+*ENDDO
+
+

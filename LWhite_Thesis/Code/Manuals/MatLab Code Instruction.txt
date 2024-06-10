@@ -1,0 +1,10 @@
+MatLab Code Instruction
+Inputs:
+	.stl  of part + support domain
+	.stl of part
+Hyperparameters
+	grid* = Desired number of voxels in x,y,z (see matlab code: mesh voxelisation)
+	comp* = Placement adjustments in x, y, z
+	unit cell sizes (e.g., 1mm and 2mm)
+To Run:
+	Run
