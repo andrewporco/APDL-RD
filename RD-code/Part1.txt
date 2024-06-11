@@ -1,0 +1,158 @@
+/CLEAR,NOSTART  ! Clear model since no SAVE found   
+
+/CWD,'C:\Users\Kuanr\OneDrive\Desktop\ARL_2024\Part1\' 
+~PARAIN,'Part1','x_t','C:\Users\Kuanr\OneDrive\Desktop\ARL_2024\',SOLIDS,0,0  
+
+wpro,,-90.000000,
+
+!***************************************************************
+/PREP7
+
+LAYER_DEFAULT = 0.002
+H = 0.010
+Layers = H/LAYER_DEFAULT
+*DO, DV, 1, Layers-1, 1
+    wpoff,0,0,1*LAYER_DEFAULT
+    VSBW,ALL
+*ENDDO
+
+AIR_TEMP = 25
+ET, 1, SOLID187, 0        ! 3D 10-node tetrahedral structural solid
+MPTEMP, 1, 25, 100  
+MP, REFT, 1, AIR_TEMP 
+MP, DENS, 1, 2.76E3   
+MP, PRXY, 1, 0.33  
+MP, ALPX, 1, -0.016       
+MP, ALPY, 1, -0.016     
+MP, ALPZ, 1, 0.014         
+MP, EX, 1, 76.0E9
+TB, BISO, 1, 6, 2          
+TBTEMP, 25
+TBDATA, , 3.14E8, 7.6E8 
+TBTEMP, 100
+TBDATA, , 3.14E8, 7.6E8
+
+! Meshing the sliced geometry with tetrahedral elements
+MSHAPE, 1, 3D       ! Set meshing shape to tetrahedral
+!MSHKEY, 0           ! Automatic meshing with smart size
+!SMRTSIZE, 1         ! Fine meshing, adjust according to need
+!ESIZE, 0.00025
+ESIZE, LAYER_DEFAULT/5
+
+*GET, num_volumes, VOLU,,COUNT  ! Get the number of volumes (sliced layers)
+
+! Loop through volumes
+!*DO,i,1,num_volumes
+*DO, i, 1, numVols+1, 1
+    ! Select current volume
+    *VSEL,S,VOLID,i
+    
+    ! Mesh the selected volume
+    VMESH,ALL
+    
+    ! Optionally, you can adjust meshing parameters here
+    
+    ! Display information about the meshed volume
+    *GET, num_elems, ELEM, 0, COUNT ! Get the number of elements in the volume
+    *GET, num_nodes, NODE, 0, COUNT ! Get the number of nodes in the volume
+    ! Output information
+    /SHOW, 'Volume ', i, ' meshed with ', num_elems, ' elements and ', num_nodes, ' nodes.'
+    
+    ! Optionally, you can perform further operations on the meshed volume here
+    
+*ENDDO
+
+
+!******************************************************************************
+/PREP7
+!EPLOT
+
+LSCLEAR, ALL
+
+!KEYOPT, 1, 2, 1   
+
+TREF, AIR_TEMP
+
+NSEL, S, LOC, Y, 0
+
+D, ALL, ALL      ! Fix the fixture
+
+ALLSEL, ALL 
+
+FINISH
+!***************************************************************
+! MECHANICAL
+
+/SOLU
+
+! Solution enviorment setting starts
+
+ANTYPE, STATIC    ! Quasistatic analysis
+
+SOLCONTROL, ON    !  all control commends set earlier are reset to their original default values
+
+NROPT, FULL, , ON    !  Use full Newton-Raphson solver
+
+! NLGEOM, ON    ! Include large-defection effects in a static or transient analysis
+
+OUTRES, ALL, 1    ! Output all the solutin items every substep of each load step  
+
+ALLSEL, ALL
+
+DMSTEP = H/LAYER_DEFAULT
+
+Layer = H/DMSTEP
+
+! ESEL, ALL
+
+! EALIVE, ALL
+
+ESEL, S, CENT, Y, 0, 0
+    
+EKILL, ALL
+
+ESEL, S, LIVE
+    
+NSLE, S, ALL
+
+D, ALL, ALL 
+    
+ALLSEL, ALL
+
+*DO, IT, 1, DMSTEP, 1
+
+  *IF, IT, EQ, 1, THEN
+      
+      NSEL, S, LOC, Y, 0
+        
+      DDELE, ALL, ALL 
+      
+      ESEL, S, CENT, Y, 0, Layer
+
+      !EALIVE, ALL
+      
+      BFE, ALL, TEMP, , AIR_TEMP+1
+  
+  *ELSE
+           
+      ESEL, S, CENT, Y, (IT-1)*Layer, IT*Layer
+               
+      EALIVE, ALL
+      
+      BFE, ALL, TEMP, , AIR_TEMP+1
+      
+      NSLE, S
+      
+      DDELE, ALL, ALL 
+                    
+  *ENDIF
+
+  ALLSEL, ALL
+
+  SOLVE
+
+*ENDDO
+
+SAVE
+
+FINISH
