@@ -1,15 +1,16 @@
 /CLEAR,NOSTART  ! Clear model since no SAVE found   
 
 /CWD,'C:\Users\XuanLiang\Documents\GitHub\APDL-RD\RD-code\' 
-~PARAIN,'Part1','x_t','C:\Users\XuanLiang\Documents\GitHub\APDL-RD\RD-code\',SOLIDS,0,0  
+~PARAIN,'centered','x_t','C:\Users\XuanLiang\Documents\GitHub\APDL-RD\RD-code\',SOLIDS,0,0  
 
 wpro,,-90.000000,
 
 !***************************************************************
 /PREP7
 
-LAYER_DEFAULT = 0.002
-H = 0.010
+![meters]
+LAYER_DEFAULT = 0.0045
+H = 0.0225
 Layers = H/LAYER_DEFAULT
 *DO, DV, 1, Layers-1, 1
     wpoff,0,0,1*LAYER_DEFAULT
@@ -32,12 +33,25 @@ TBDATA, , 3.14E8, 7.6E8
 TBTEMP, 100
 TBDATA, , 3.14E8, 7.6E8
 
+! Define process parameters
+LASER_POWER = 200          ! Laser Power in watts
+ABSORPTION_EFFICIENCY = 0.3 ! Heat Source Absorption Efficiency
+BEAM_DIAMETER = 0.00015     ! Laser Beam Diameter in meters
+TRAVEL_SPEED = 0.857        ! Travel Speed in meters/second
+HATCH_SPACING = 0.000095     ! Hatch Spacing in meters
+RECOATER_TIME = 8          ! Recoater Time in seconds
+INTERLAYER_ROTATION = 67   ! Interlayer Rotation Angle in degrees
+LACK_OF_FUSION_TEMP = 1660 ! Lack of Fusion Temperature in degrees Celsius
+HOT_SPOT_TEMP = 2200       ! Hot Spot Temperature in degrees Celsius
+INTERLAYER_TEMP = 500      ! Interlayer Temperature in degrees Celsius
+
+
 ! Meshing the sliced geometry with tetrahedral elements
 MSHAPE, 1, 3D       ! Set meshing shape to tetrahedral
 !MSHKEY, 0           ! Automatic meshing with smart size
 !SMRTSIZE, 1         ! Fine meshing, adjust according to need
 !ESIZE, 0.00025
-ESIZE, LAYER_DEFAULT/5
+ESIZE, LAYER_DEFAULT
 
 *GET, num_volumes, VOLU,,COUNT  ! Get the number of volumes (sliced layers)
 
@@ -156,3 +170,4 @@ ALLSEL, ALL
 SAVE
 
 FINISH
+!**********************************************************

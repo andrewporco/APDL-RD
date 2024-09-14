@@ -1,15 +1,16 @@
 /CLEAR,NOSTART  ! Clear model since no SAVE found   
 
 /CWD,'C:\Users\XuanLiang\Documents\GitHub\APDL-RD\RD-code\' 
-~PARAIN,'Part1','x_t','C:\Users\XuanLiang\Documents\GitHub\APDL-RD\RD-code\',SOLIDS,0,0  
+~PARAIN,'Part3','x_t','C:\Users\XuanLiang\Documents\GitHub\APDL-RD\RD-code\',SOLIDS,0,0  
 
 wpro,,-90.000000,
 
 !***************************************************************
 /PREP7
 
-LAYER_DEFAULT = 0.002
-H = 0.010
+![meters]
+LAYER_DEFAULT = 0.0025
+H = 0.0225
 Layers = H/LAYER_DEFAULT
 *DO, DV, 1, Layers-1, 1
     wpoff,0,0,1*LAYER_DEFAULT
@@ -20,24 +21,25 @@ AIR_TEMP = 25
 ET, 1, SOLID187, 0        ! 3D 10-node tetrahedral structural solid
 MPTEMP, 1, 25, 100  
 MP, REFT, 1, AIR_TEMP 
-MP, DENS, 1, 2.76E3   
-MP, PRXY, 1, 0.33  
+MP, DENS, 1, 4.43E3   
+MP, PRXY, 1, 0.34  
 MP, ALPX, 1, -0.016       
 MP, ALPY, 1, -0.016     
-MP, ALPZ, 1, 0.014         
-MP, EX, 1, 76.0E9
+MP, ALPZ, 1, 0.014          
+MP, EX, 1, 110E9
 TB, BISO, 1, 6, 2          
 TBTEMP, 25
-TBDATA, , 3.14E8, 7.6E8 
+TBDATA, , 8.80E8, 9.5E8 
 TBTEMP, 100
-TBDATA, , 3.14E8, 7.6E8
+TBDATA, , 8.80E8, 9.5E8
+
 
 ! Meshing the sliced geometry with tetrahedral elements
 MSHAPE, 1, 3D       ! Set meshing shape to tetrahedral
 !MSHKEY, 0           ! Automatic meshing with smart size
 !SMRTSIZE, 1         ! Fine meshing, adjust according to need
 !ESIZE, 0.00025
-ESIZE, LAYER_DEFAULT/5
+ESIZE, LAYER_DEFAULT
 
 *GET, num_volumes, VOLU,,COUNT  ! Get the number of volumes (sliced layers)
 
@@ -156,3 +158,5 @@ ALLSEL, ALL
 SAVE
 
 FINISH
+!**********************************************************
+*GET, E_COUNT, ELEM,,COUNT
